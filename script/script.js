@@ -1,234 +1,260 @@
-function Flocon()
-{
-	this.init();
+var snake = window.snake || {};
+function launchFullscreen(element) {
+  if(element.requestFullscreen) {
+    element.requestFullscreen();
+  } else if(element.mozRequestFullScreen) {
+    element.mozRequestFullScreen();
+  } else if(element.webkitRequestFullscreen) {
+    element.webkitRequestFullscreen();
+  } else if(element.msRequestFullscreen) {
+    element.msRequestFullscreen();
+  }
 }
-Flocon.prototype =
-{
-	init : function()
-	{
-		this.x = parseInt(Math.random() * 600);
-		this.y = 0;
-		this.color = "rgba("+parseInt(Math.random() * 200)+", "+parseInt(Math.random() * 200)+", "+parseInt(Math.random() * 200)+", "+parseInt(Math.random() * 200)+")";
-		this.speed = parseInt(Math.random() * 8 + 1);
-	},
-	move : function()
-	{
-		this.y += this.speed;
-		if (this.y > 600)
-		{
-			this.init();
-		}
-		this.x += this.speed * windSpeed;
-		if (this.x > 600)
-		{
-			this.x = 0;
-		}
-		else if (this.x < 0)
-		{
-			this.x = 600;
-		}
-	},
-	draw : function()
-	{
-		context.fillStyle = this.color;
-		context.fillRect(this.x, this.y, this.speed, this.speed);
-	}
-};
-var wind = 1;
-var windSpeed = 1;
-var direction = true;
-setInterval(function()
-{
-	if (direction)
-	{
-		wind++;
-		if (wind > 100)
-			direction = !direction;
-	}
-	else
-	{
-		wind--;
-		if (wind < -100)
-			direction = !direction;
-	}
-	windSpeed = wind / 100;
-}, 100);
-var flocons = [];
-var max = 500;
-var count = 0;
-while (count < max)
-{
-	flocons.push(new Flocon());
-	count++;
+window.onload = function(){
+    document.addEventListener("fullscreenchange", function(){snake.game.adjust();});
+    document.addEventListener("webkitfullscreenchange", function(){snake.game.adjust();});
+    document.addEventListener("mozfullscreenchange", function(){snake.game.adjust();});
+    document.addEventListener("MSFullscreenChange", function(){snake.game.adjust();});
+
+    snake.game = (function()
+    {
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+        var status=false;
+        var score = 0;
+        var old_direction = 'right';
+        var direction = 'right';
+        var block = 10;
+        var score = 0;
+        var refresh_rate = 250;
+        var pos = [[5,1],[4,1],[3,1],[2,1],[1,1]];
+        var scoreboard = document.getElementById('scoreboard');
+        var control = document.getElementById('controls');
+        var keys = {
+            37 : 'left',
+            38 : 'up',
+            39 : 'right',
+            40 : 'down'
+            };
+        function adjust()
+        {
+            if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement )
+            {
+                canvas.width=window.innerWidth;
+                canvas.height=window.innerHeight;
+                control.style.display='none';
+            }
+            else
+            {
+                canvas.width=850;
+                canvas.height=600;
+                control.style.display='inline';
+            }
+        }
+        var food = [Math.round(Math.random(4)*(canvas.width - 10)), Math.round(Math.random(4)*(canvas.height - 10)),];
+        function todraw()
+        {
+            for(var i = 0; i < pos.length; i++)
+            {
+                draw(pos[i]);
+            }
+        }
+        function giveLife()
+        {
+            var nextPosition = pos[0].slice();
+            switch(old_direction)
+            {
+                case 'right':
+                    nextPosition[0] += 1;
+                    break;
+                case 'left':
+                    nextPosition[0] -= 1;
+                    break;
+                case 'up':
+                    nextPosition[1] -= 1;
+                    break;
+                case 'down':
+                    nextPosition[1] += 1;
+                    break;    
+            }
+            pos.unshift(nextPosition);
+            pos.pop();
+        }
+        function grow()
+        {
+            var nextPosition = pos[0].slice();
+            switch(old_direction)
+            {
+                case 'right':
+                    nextPosition[0] += 1;
+                    break;
+                case 'left':
+                    nextPosition[0] -= 1;
+                    break;
+                case 'up':
+                    nextPosition[1] -= 1;
+                    break;
+                case 'down':
+                    nextPosition[1] += 1;
+                    break;    
+            }
+            pos.unshift(nextPosition);
+        }
+        function loop()
+        {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            todraw();
+            giveLife();
+            feed();
+            if(is_catched(pos[0][0]*block,pos[0][1]*block,block,block,food[0],food[1],10,10))
+            {
+                score += 10;
+                createfood();
+                scoreboard.innerHTML = score;
+                grow();
+                if(refresh_rate > 100)
+                {
+                    refresh_rate -=5;
+                }
+            }
+            snake.game.status = setTimeout(function() { loop(); },refresh_rate);
+        }
+        window.onkeydown = function(event){
+             direction = keys[event.keyCode];
+                if(direction)
+                {
+                    setWay(direction);
+                    event.preventDefault();
+                }
+            };
+        function setWay(direction)
+        {
+            switch(direction)
+            {
+                case 'left':
+                    if(old_direction!='right')
+                    {
+                        old_direction = direction;
+                    }
+                    break;
+                case 'right':
+                    if(old_direction!='left')
+                    {
+                        old_direction = direction;
+                    }
+                    break;
+                case 'up':
+                    if(old_direction!='down')
+                    {
+                        old_direction = direction;
+                    }
+                    break;
+                case 'down':
+                    if(old_direction!='up')
+                    {
+                        old_direction = direction;
+                    }
+                    break;
+            }
+
+        }
+        function feed()
+        {
+            ctx.beginPath();
+            ctx.fillStyle = "#ff0000";
+            ctx.fillRect(food[0],food[1],10,10);
+            ctx.fill();
+            ctx.closePath();
+        }
+        function createfood()
+        {
+            food = [Math.round(Math.random(4)*850), Math.round(Math.random(4)*600)];
+        }
+        function is_catched(ax,ay,awidth,aheight,bx,by,bwidth,bheight) {
+            return !(
+            ((ay + aheight) < (by)) ||
+            (ay > (by + bheight)) ||
+            ((ax + awidth) < bx) ||
+            (ax > (bx + bwidth))
+            );
+        }
+        function draw(pos)
+        {
+            var x = pos[0] * block;
+            var y = pos[1] * block;
+            if(x >= canvas.width || x <= 0 || y >= canvas.height || y<= 0)
+            {
+                    document.getElementById('pause').disabled='true';
+                    snake.game.status=false;
+                    ctx.clearRect(0,0,canvas.width,canvas.height);
+                    ctx.font='40px san-serif';
+                    ctx.fillText('Game Over',300,250);
+                    ctx.font = '20px san-serif';
+                    ctx.fillStyle='#000000';
+                    ctx.fillText('To Play again Refresh the page or click the Restarts button',200,300);
+                    throw ('Game Over');
+            }
+            else
+            {
+                ctx.beginPath();
+                ctx.fillStyle='#000000';
+                ctx.fillRect(x,y,block,block);
+                ctx.closePath();
+            }
+        }
+        function pause(elem)
+        {
+            if(snake.game.status)
+            {
+                clearTimeout(snake.game.status);
+                snake.game.status=false;
+                elem.value='Play'
+            }
+            else
+            {
+                loop();
+                elem.value='Pause';
+            }
+        }
+        function begin()
+        {
+            loop();
+        }
+        function restart()
+        {
+            location.reload();
+        }
+        function start()
+        {
+            ctx.fillStyle='#000000';
+            ctx.fillRect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle='#ffffff';
+            ctx.font='40px helvatica';
+            ctx.fillText('Vignesh',370,140);
+            ctx.font='20px san-serif';
+            ctx.fillText('presents',395,190);
+            ctx.font='italic 60px san-serif';
+            ctx.fillText('Feed The Snake',240,280);
+            var img = new Image();
+            img.onload = function()
+            {
+                ctx.drawImage(img,300,300,200,200);
+                ctx.fillRect(410,330,10,10);
+            }
+            img.src ='snake.png';
+        }
+        function fullscreen()
+        {
+            launchFullscreen(canvas);
+        }
+        return {
+            pause: pause,
+            restart : restart,
+            start : start,
+            begin: begin,
+            fullscreen : fullscreen,
+            adjust : adjust,
+        };
+    })();
+    snake.game.start();
 }
-var context;
-function refresh()
-{
-	context.clearRect(0, 0, 600, 600);
-	var count = 0;
-	while (count < flocons.length)
-	{
-		flocons[count].move();
-		flocons[count].draw();
-		count++;
-	}
-	requestAnimationFrame(refresh);
-}
-document.addEventListener("DOMContentLoaded", function()
-{
-	var canvas = document.querySelector('#dessin');
-	context = canvas.getContext('2d');
-	requestAnimationFrame(refresh);
-});
-// var x = 0
-// var context; 
-// function Flocon()
-// {
-// 	this.init();
-// }
-// Flocon.prototype = 
-// {
-// 	init : function()
-// 	{
-// 		this.x = parseInt(Math.random() * 600);
-// 		this.y = 0;
-// 		this.color = "rgba("+parseInt(Math.random() * 200)+", "+parseInt(Math.random() * 200)+", "+parseInt(Math.random() * 200)+", "+parseInt(Math.random() * 200)+")";
-// 		this.speed = parseInt(Math.random() * 10 +1);
-// 	},
-// 	move : function()
-// 	{
-// 		this.y += this.speed;
-// 		if (this.y > 600)
-// 		{
-// 			this.init();
-// 		}
-// 		this.x += this.speed / wind;
-// 		if (this.x > 600)
-// 		{
-// 			this.x=0;
-// 		}
-// 		else if (this.x < 0)
-// 		{
-// 			this.x = 600;
-// 		}
-// 	},
-// 	draw : function()
-// 	{
-// 		context.fillStyle = this.color;
-// 		context.fillRect(this.x, this.y, 10-this.speed, 10-this.speed);
-// 	}
-// }
-// var wind = 2;
-// var windSpeed = 1;
-// var direction = true;
-// setInterval(function()
-// {
-// 	if(direction)
-// 	{
-// 			wind++;
-// 		if (wind > 100)
-// 			direction = !direction;
-// 	}
-// 	else
-// 	{
-// 			wind--;
-// 		if (wind < -100)
-// 			direction = !direction
-// 	}
-// 	windSpeed = wind - 50;
-// }, 100);
-// 	wind = 1;
-// 	setTimeout(function()
-// 	{
-// 		wind = 0.5;
-// 	}, 1000);
-// 	setTimeout(function()
-// 	{
-// 		wind = -1;
-// 	}, 2000);
-// 	setTimeout(function()
-// 	{
-// 		wind = -2;
-// 	}, 3000);
-// 	setTimeout(function()
-// 	{
-// 		wind = -1;
-// 	}, 5000);
-// 	setTimeout(function()
-// 	{
-// 		wind = 0.5;
-// 	}, 6000);
-// 	setTimeout(function()
-// 	{
-// 		wind = 1;
-// 	}, 7000);
-// 	setTimeout(function()
-// 	{
-// 		wind = 2;
-// 	}, 8000);
-// }, 10000)
-// setInterval(function()
-// {
-// 	wind *= -1;
-// }, 5000);
-// var flocons = [];
-// var max = 500;
-// var count = 0;
-// while (count < max)
-// {
-// 	flocons.push(new Flocon());
-// 	count++;
-// }
-
-// var context;
-// function refresh()
-// {
-// 	context.clearRect(0, 0, 600, 600);
-// 	var count = 0;
-// 	while (count < flocons.length)
-// 	{
-// 		flocons[count].move();
-// 		flocons[count].draw();
-// 		count++;	
-// 	}
-// 	requestAnimationFrame(refresh);
-// }
-// document.addEventListener("DOMContentLoaded", function()
-// {
-// 	var canvas = document.querySelector('#dessin');
-// 	context = canvas.getContext('2d');
-// 	requestAnimationFrame(refresh);
-// });
-
-// var x = 0;
-// var contex;
-// document.addEventListener("DOMContentLoaded", function()
-// {
-// 	var canvas = document.querySelector('#dessin');
-// 	var context = canvas.getContext('2d');
-
-// 	var my_gradient = context.createLinearGradient(0, 0, 100, 0);
-// 	my_gradient.addColorStop(1, "black");
-// 	my_gradient.addColorStop(0, "white");
-// 	context.fillStyle = my_gradient;
-
-// 	// context.fillStyle = "red";
-// 	context.strokeStyle = "pink";
-// 	context.fillRect(5, 5, 100, 100);
-// 	context.strokeRect(105, 105, 100, 100);
-// 	context.clearRect(55, 55, 100, 100);
-// 	requestAnimationFrame(refresh);
-// 	function refresh()
-// 	{ 
-// 		context.clearRect(x, 0, 50, 50);
-// 		context.fillStyle = my_gradient;
-// 		context.fillRect(5, 5, 100, 100);
-// 		context.strokeRect(105, 105, 100, 100);
-// 		context.clearRect(55, 55, 100, 100);
-// 		context.fillStyle = "red";
-// 		x += 5;
-// 		context.fillRect(x, 0, 50, 50);
-// 		requestAnimationFrame(refresh);
-
-// 	}
-// });

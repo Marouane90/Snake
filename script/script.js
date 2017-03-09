@@ -1,48 +1,55 @@
 document.addEventListener("DOMContentLoaded", function()
 {
+    var size = 10;
     //Create the renderer
-    var renderer = PIXI.autoDetectRenderer(800, 800);
+    var renderer = PIXI.autoDetectRenderer(500, 500);
     //Add the canvas to the HTML document
     document.body.appendChild(renderer.view);
     //Create a container object called the `stage`
     var stage = new PIXI.Container();
-    // Create a circle object
-    var circle = new PIXI.Graphics();
-    // La couleur (violet)
-    circle.beginFill(0x9966FF);
-    // On dessine le cercle (x, y, radius)
-    circle.drawCircle(0, 0, 32);
-    // On arrête de dessiner
-    circle.endFill();
-    // On déplace le cercle
-    circle.x = 64;
-    circle.y = 130;
-    // On l'ajoute a notre "stage" (l'affichage)
-    stage.addChild(circle);
+    var x = 0;
+    while (x < 50)
+    {
+        var y = 0;
+        while (y < 50)
+        {
+            var cell = new PIXI.Graphics();
+            cell.lineStyle(1, 0x000000, 1);
+            cell.beginFill(0xFFFFFF);
+            cell.drawRect(0, 0, size, size);
+            cell.endFill();
+            cell.x = x * size;
+            cell.y = y * size;
+            stage.addChild(cell);
+            y++;
+        }
+        x++;
+    }
+
     var rectangle = new PIXI.Graphics();
-    rectangle.lineStyle(4, 0xFF3300, 1);
-    rectangle.beginFill(0x66CCFF);
-    rectangle.drawRect(0, 0, 64, 64);
+    rectangle.beginFill(0x83C3E6);
+    rectangle.drawRect(0, 0, 10, 10);
     rectangle.endFill();
-    rectangle.x = 170;
-    rectangle.y = 170;
+    rectangle.x = 50;
+    rectangle.y = 50;
     stage.addChild(rectangle);
     //Tell the `renderer` to `render` the `stage`
     renderer.render(stage);
-    function refresh()
-    {
-        rectangle.rotation += 0.01;
-        circle.x += 1;
-        if (circle.x > 800)
-            circle.x = 0;
-        circle.y += 2;
-        if (circle.y > 800)
-            circle.y = 0;
-        renderer.render(stage);
-        requestAnimationFrame(refresh);
-    }
-    requestAnimationFrame(refresh);
+    // function refresh()
+    // {
+    //     rectangle.rotation += 0.01;
+    //     rectangle.x += 1;
+    //     if (rectangle.x > 800)
+    //         rectangle.x = 0;
+    //     rectangle.y += 2;
+    //     if (rectangle.y > 800)
+    //         rectangle.y = 0;
+    //     renderer.render(stage);
+    //     requestAnimationFrame(refresh);
+    // }
+    // requestAnimationFrame(refresh);
 });
+
 
 // var snake = window.snake || {};
 // function launchFullscreen(element) {

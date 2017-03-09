@@ -1,8 +1,7 @@
-
-canvas
+/*canvas
 {
     border: 1px solid black;
-}
+}*/
 #controls
 {
     position:absolute;
@@ -12,4 +11,6 @@ canvas
     float: right;
     text-align: center;
 }
-
+canvas{
+	border: 1px solid black;
+}

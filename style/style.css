@@ -1,0 +1,52 @@
+*{
+	box-sizing: border-box;
+}
+.container{
+	width: 800px;
+	text-align: center;
+}
+table{
+	text-align: center;
+	width: 80%;
+	margin: 0 200px;
+}
+
+td{
+	vertical-align: middle;
+}
+p{
+	display: inline-block;
+/*	padding: 200px;*/
+	text-align: center;
+	margin: 20px 80px;
+	
+} 
+input{
+	margin: 0 30px;
+	border: none;
+	border-bottom: 1px solid;
+	text-align: center;
+	margin-top: 30px;
+}
+button{
+	display: inline-block;
+	background-color: none;
+	border: none;
+	color: red;
+	background-color: white;
+	vertical-align: bottom;
+}
+select{
+	background-color: none;
+	background-color: white;
+	border: none;
+	border-top: 1px solid;
+	vertical-align: bottom;
+}
+.checkbox{
+	background-color: none;
+	background-color: white;
+	vertical-align: middle;
+	color: green;
+
+}

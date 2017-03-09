@@ -1,11 +1,7 @@
-body
-{
-    background:#000;
-    color:#FFF;
-}
+
 canvas
 {
-    background:#FFF;
+    border: 1px solid black;
 }
 #controls
 {
@@ -13,4 +9,7 @@ canvas
     top:0;
     right:0;
     margin:10px;
+    float: right;
+    text-align: center;
 }
+

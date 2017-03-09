@@ -1,53 +1,130 @@
+"use strict";
+var stage;
+class Square
+{
+    constructor(x, y, size, fill)
+    {
+        this.square = new PIXI.Graphics();
+        this.square.interactive = true;
+        this.size = size;
+        this._fill = fill;
+        this.posX = x;
+        this.posY = y;
+        this.x = x * (this.size + 1) + 1;
+        this.y = y * (this.size + 1) + 1;
+        this.square.beginFill(this._fill);
+        this.square.drawRect(this.x, this.y, this.size, this.size);
+        this.square.endFill();
+        stage.addChild(this.square);
+        this.position = stage.getChildIndex(this.square);
+    }
+    set fill(fill)
+    {
+        this._fill = fill;
+        this.square.clear();
+        this.square.beginFill(this._fill);
+        this.square.drawRect(this.x, this.y, this.size, this.size);
+        this.square.endFill();
+    }
+}
 document.addEventListener("DOMContentLoaded", function()
 {
     var size = 10;
+    var map = [];
     //Create the renderer
-    var renderer = PIXI.autoDetectRenderer(500, 500);
+    var renderer = PIXI.autoDetectRenderer(551, 551);
     //Add the canvas to the HTML document
     document.body.appendChild(renderer.view);
     //Create a container object called the `stage`
-    var stage = new PIXI.Container();
+    stage = new PIXI.Container();
     var x = 0;
     while (x < 50)
     {
+        map[x] = [];
         var y = 0;
         while (y < 50)
         {
-            var cell = new PIXI.Graphics();
-            cell.lineStyle(1, 0x000000, 1);
-            cell.beginFill(0xFFFFFF);
-            cell.drawRect(0, 0, size, size);
-            cell.endFill();
-            cell.x = x * size;
-            cell.y = y * size;
-            stage.addChild(cell);
+            var cell = new Square(x, y, size, 0xFFFFFF);
+            map[x][y] = cell;
             y++;
         }
         x++;
     }
+    var x = parseInt(Math.random() * 50);
+    var y = parseInt(Math.random() * 50);
+    map[x][y].fill = 0x83C3E6;
+    var x = parseInt(Math.random() * 50);
+    var y = parseInt(Math.random() * 50);
+    map[x][y].fill = 0x83C3E6;
+    var x = parseInt(Math.random() * 50);
+    var y = parseInt(Math.random() * 50);
+    map[x][y].fill = 0x83C3E6;
 
-    var rectangle = new PIXI.Graphics();
-    rectangle.beginFill(0x83C3E6);
-    rectangle.drawRect(0, 0, 10, 10);
-    rectangle.endFill();
-    rectangle.x = 50;
-    rectangle.y = 50;
-    stage.addChild(rectangle);
+    var snake = [];
+    var x = parseInt(Math.random() * 50);
+    var y = parseInt(Math.random() * 50);
+    map[x][y].fill = 0xFF0000;
+    map[x][y+1].fill = 0xFF0000;
+    map[x][y-1].fill = 0xFF0000;
     //Tell the `renderer` to `render` the `stage`
     renderer.render(stage);
-    // function refresh()
-    // {
-    //     rectangle.rotation += 0.01;
-    //     rectangle.x += 1;
-    //     if (rectangle.x > 800)
-    //         rectangle.x = 0;
-    //     rectangle.y += 2;
-    //     if (rectangle.y > 800)
-    //         rectangle.y = 0;
-    //     renderer.render(stage);
-    //     requestAnimationFrame(refresh);
-    // }
-    // requestAnimationFrame(refresh);
+
+
+function moveDirection(info)
+{
+    var Move = [];
+    var x = 0;
+    while (x < 50)
+    {
+        Move[x] = [];
+        var y = 0;
+        while (y < 50)
+        {
+            var cellSnake = new Square(x, y, size, 0xFFFFFF);
+            Move[x][y] = cellSnack;
+            y++;
+        }
+        x++;
+    }
+    // var input= document.querySelector('input');
+    if(info.keyCode == 37)
+    {
+        Move[x-1][y].fill = 0xFF0000;
+        Move[x+2][y].fill = 0xFFFFFF;  
+    }
+    if(info.keyCode == 38)
+    {
+        Move[x][y-2].fill = 0xFF0000;
+        Move[x][y+1].fill = 0xFFFFFF;
+    }
+    if(info.keyCode == 39)
+    {
+        Move[x+2][y].fill = 0xFF0000;
+        Move[x-1][y].fill = 0xFFFFFF;
+    }
+    if(info.keyCode == 40)
+    {
+        Move[x][y+1].fill = 0xFF0000;
+        Move[x][y-2].fill = 0xFFFFFF;
+    }
+    // console.log("moveDiv >", info.keyCode);
+}
+    function move() {
+
+        snake.speed = parseInt(Math.random() * 2);
+            this.y += this.speed;
+        if (this.y > 200)
+        {
+            this.init();
+        }
+    }
+    function refresh()
+    {
+        renderer.render(stage);
+        requestAnimationFrame(refresh);
+    }
+    requestAnimationFrame(refresh);
+    document.onkeydown = moveDirection;
 });
 
 

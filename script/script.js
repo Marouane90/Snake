@@ -50,6 +50,8 @@ document.addEventListener("DOMContentLoaded", function()
         }
         x++;
     }
+
+    
     var x = parseInt(Math.random() * 50);
     var y = parseInt(Math.random() * 50);
     map[x][y].fill = 0x83C3E6;
@@ -60,52 +62,73 @@ document.addEventListener("DOMContentLoaded", function()
     var y = parseInt(Math.random() * 50);
     map[x][y].fill = 0x83C3E6;
 
-    var snake = [];
+var coords = [];
     var x = parseInt(Math.random() * 50);
     var y = parseInt(Math.random() * 50);
     map[x][y].fill = 0xFF0000;
     map[x][y+1].fill = 0xFF0000;
     map[x][y-1].fill = 0xFF0000;
+coords.push([x, y-1]);
+coords.push([x, y]);
+coords.push([x, y+1]);
     //Tell the `renderer` to `render` the `stage`
     renderer.render(stage);
 
 
 function moveDirection(info)
 {
-    var Move = [];
-    var x = 0;
-    while (x < 50)
-    {
-        Move[x] = [];
-        var y = 0;
-        while (y < 50)
-        {
-            var cellSnake = new Square(x, y, size, 0xFFFFFF);
-            Move[x][y] = cellSnack;
-            y++;
-        }
-        x++;
-    }
     // var input= document.querySelector('input');
     if(info.keyCode == 37)
     {
-        Move[x-1][y].fill = 0xFF0000;
-        Move[x+2][y].fill = 0xFFFFFF;  
+        var tmp = coords[0];
+        var x = tmp[0];
+        var y = tmp[1];
+        map[x-1][y].fill = 0xFF0000;
+        coords.unshift([x - 1, y]);
+
+        var tmp = coords.pop();
+        var x = tmp[0];
+        var y = tmp[1];
+        map[x][y].fill = 0xFFFFFF;
     }
     if(info.keyCode == 38)
     {
-        Move[x][y-2].fill = 0xFF0000;
-        Move[x][y+1].fill = 0xFFFFFF;
+        var tmp = coords[0];
+        var x = tmp[0];
+        var y = tmp[1];
+        map[x][y-1].fill = 0xFF0000;
+        coords.unshift([x, y-1]);
+
+        var tmp = coords.pop();
+        var x = tmp[0];
+        var y = tmp[1];
+        map[x][y].fill = 0xFFFFFF;
     }
     if(info.keyCode == 39)
     {
-        Move[x+2][y].fill = 0xFF0000;
-        Move[x-1][y].fill = 0xFFFFFF;
+        var tmp = coords[0];
+        var x = tmp[0];
+        var y = tmp[1];
+        map[x+1][y].fill = 0xFF0000;
+        coords.unshift([x + 1, y]);
+
+        var tmp = coords.pop();
+        var x = tmp[0];
+        var y = tmp[1];
+        map[x][y].fill = 0xFFFFFF;
     }
     if(info.keyCode == 40)
     {
-        Move[x][y+1].fill = 0xFF0000;
-        Move[x][y-2].fill = 0xFFFFFF;
+        var tmp = coords[0];
+        var x = tmp[0];
+        var y = tmp[1];
+        map[x][y+1].fill = 0xFF0000;
+        coords.unshift([x, y+1]);
+
+        var tmp = coords.pop();
+        var x = tmp[0];
+        var y = tmp[1];
+        map[x][y].fill = 0xFFFFFF;
     }
     // console.log("moveDiv >", info.keyCode);
 }

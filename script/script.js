@@ -4,6 +4,7 @@ class Square
 {
     constructor(x, y, size, fill)
     {
+        this.pascal = false;
         this.square = new PIXI.Graphics();
         this.square.interactive = true;
         this.size = size;
@@ -17,6 +18,13 @@ class Square
         this.square.endFill();
         stage.addChild(this.square);
         this.position = stage.getChildIndex(this.square);
+    }
+    isApple(pascal)
+    {
+        if (pascal === undefined)
+            return this.pascal;
+        else
+            this.pascal = pascal;
     }
     set fill(fill)
     {
@@ -50,18 +58,25 @@ document.addEventListener("DOMContentLoaded", function()
         }
         x++;
     }
-    function food()
-    {
+var coordFood = [];    
         var x = parseInt(Math.random() * 50);
         var y = parseInt(Math.random() * 50);
         map[x][y].fill = 0x83C3E6;
+        map[x][y].isApple(true);
         var x = parseInt(Math.random() * 50);
         var y = parseInt(Math.random() * 50);
         map[x][y].fill = 0x83C3E6;
+        map[x][y].isApple(true);
         var x = parseInt(Math.random() * 50);
         var y = parseInt(Math.random() * 50);
         map[x][y].fill = 0x83C3E6;    
-    }
+        map[x][y].isApple(true);
+        coordFood.push([x, y]);
+        coordFood.push([x, y]);
+        coordFood.push([x, y]);
+
+        renderer.render(stage);
+    
 
 var coords = [];
     var x = parseInt(Math.random() * 50);
@@ -69,9 +84,9 @@ var coords = [];
     map[x][y].fill = 0xFF0000;
     map[x][y+1].fill = 0xFF0000;
     map[x][y-1].fill = 0xFF0000;
-coords.push([x, y-1]);
-coords.push([x, y]);
-coords.push([x, y+1]);
+    coords.push([x, y-1]);
+    coords.push([x, y]);
+    coords.push([x, y+1]);
     //Tell the `renderer` to `render` the `stage`
     renderer.render(stage);
 
@@ -84,6 +99,17 @@ function moveDirection(info)
         var tmp = coords[0];
         var x = tmp[0];
         var y = tmp[1];
+        if (map[x -1] !== undefined && map[x][y] !== undefined)
+        {
+            if (map[x-1][y].isApple())
+            {
+                map[x-1][y].isApple(false);
+                var x0 = parseInt(Math.random() * 50);
+                var y0 = parseInt(Math.random() * 50);
+                map[x0][y0].fill = 0x83C3E6;
+                map[x0][y0].isApple(true);
+            }
+        }
         map[x-1][y].fill = 0xFF0000;
         coords.unshift([x - 1, y]);
 
@@ -99,9 +125,13 @@ function moveDirection(info)
         var y = tmp[1];
         if (map[x] !== undefined && map[x][y - 1] !== undefined)
         {
-            if (map[x][y -1] == food)
+            if (map[x][y - 1].isApple())
             {
-                var food = new food();
+                map[x][y - 1].isApple(false);
+                var x1 = parseInt(Math.random() * 50);
+                var y1 = parseInt(Math.random() * 50);
+                map[x1][y1].fill = 0x83C3E6;
+                map[x1][y1].isApple(true);
             }
             map[x][y-1].fill = 0xFF0000;
             coords.unshift([x, y-1]);
@@ -117,6 +147,17 @@ function moveDirection(info)
         var tmp = coords[0];
         var x = tmp[0];
         var y = tmp[1];
+        if (map[x +1] !== undefined && map[x][y] !== undefined)
+        {
+            if (map[x+1][y].isApple())
+            {
+                map[x+1][y].isApple(false);
+                var x0 = parseInt(Math.random() * 50);
+                var y0 = parseInt(Math.random() * 50);
+                map[x0][y0].fill = 0x83C3E6;
+                map[x0][y0].isApple(true);
+            }
+        }
         map[x+1][y].fill = 0xFF0000;
         coords.unshift([x + 1, y]);
 
@@ -130,6 +171,17 @@ function moveDirection(info)
         var tmp = coords[0];
         var x = tmp[0];
         var y = tmp[1];
+        if (map[x] !== undefined && map[x][y + 1] !== undefined)
+        {
+            if (map[x][y + 1].isApple())
+            {
+                map[x][y + 1].isApple(false);
+                var x1 = parseInt(Math.random() * 50);
+                var y1 = parseInt(Math.random() * 50);
+                map[x1][y1].fill = 0x83C3E6;
+                map[x1][y1].isApple(true);
+            }
+        }
         map[x][y+1].fill = 0xFF0000;
         coords.unshift([x, y+1]);
 

@@ -50,17 +50,21 @@ document.addEventListener("DOMContentLoaded", function()
         }
         x++;
     }
-
+    function food()
+    {
+        var x = parseInt(Math.random() * 50);
+        var y = parseInt(Math.random() * 50);
+        map[x][y].fill = 0x83C3E6;
+        var x = parseInt(Math.random() * 50);
+        var y = parseInt(Math.random() * 50);
+        map[x][y].fill = 0x83C3E6;
+        var x = parseInt(Math.random() * 50);
+        var y = parseInt(Math.random() * 50);
+        map[x][y].fill = 0x83C3E6;    
+    }
     
-    var x = parseInt(Math.random() * 50);
-    var y = parseInt(Math.random() * 50);
-    map[x][y].fill = 0x83C3E6;
-    var x = parseInt(Math.random() * 50);
-    var y = parseInt(Math.random() * 50);
-    map[x][y].fill = 0x83C3E6;
-    var x = parseInt(Math.random() * 50);
-    var y = parseInt(Math.random() * 50);
-    map[x][y].fill = 0x83C3E6;
+    // var food = function food();
+
 
 var coords = [];
     var x = parseInt(Math.random() * 50);
@@ -96,13 +100,20 @@ function moveDirection(info)
         var tmp = coords[0];
         var x = tmp[0];
         var y = tmp[1];
-        map[x][y-1].fill = 0xFF0000;
-        coords.unshift([x, y-1]);
+        if (map[x] !== undefined && map[x][y - 1] !== undefined)
+        {
+            if (map[x][y -1] == food)
+            {
+                var food = new food();
+            }
+            map[x][y-1].fill = 0xFF0000;
+            coords.unshift([x, y-1]);
 
-        var tmp = coords.pop();
-        var x = tmp[0];
-        var y = tmp[1];
-        map[x][y].fill = 0xFFFFFF;
+            var tmp = coords.pop();
+            var x = tmp[0];
+            var y = tmp[1];
+            map[x][y].fill = 0xFFFFFF;
+        }
     }
     if(info.keyCode == 39)
     {

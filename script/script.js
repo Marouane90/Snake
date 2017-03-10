@@ -5,6 +5,7 @@ class Square
     constructor(x, y, size, fill)
     {
         this.pascal = false;
+        this.snake = false;
         this.square = new PIXI.Graphics();
         this.square.interactive = true;
         this.size = size;
@@ -19,12 +20,32 @@ class Square
         stage.addChild(this.square);
         this.position = stage.getChildIndex(this.square);
     }
+
     isApple(pascal)
     {
         if (pascal === undefined)
             return this.pascal;
         else
+        {
             this.pascal = pascal;
+            if (pascal)
+                this.fill = 0x83C3E6;
+            else
+                this.fill = 0xFFFFFF;
+        }
+    }
+    isSnake(snake)
+    {
+        if (snake === undefined)
+            return this.snake;
+        else
+        {
+            this.snake = snake;
+            if (snake)
+                this.fill = 0xFF0000;
+            else
+                this.fill = 0xFFFFFF;
+        }
     }
     set fill(fill)
     {
@@ -33,6 +54,11 @@ class Square
         this.square.beginFill(this._fill);
         this.square.drawRect(this.x, this.y, this.size, this.size);
         this.square.endFill();
+    }
+
+    get fill ()
+    {
+        return this._fill;
     }
 }
 document.addEventListener("DOMContentLoaded", function()
@@ -53,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function()
         while (y < 50)
         {
             var cell = new Square(x, y, size, 0xFFFFFF);
-            map[x][y] = cell;
+            map[][y] = cell;
             y++;
         }
         x++;
@@ -61,9 +87,9 @@ document.addEventListener("DOMContentLoaded", function()
 var coords = [];
     var x = parseInt(Math.random() * 50);
     var y = parseInt(Math.random() * 50);
-    map[x][y].fill = 0xFF0000;
-    map[x][y+1].fill = 0xFF0000;
-    map[x][y-1].fill = 0xFF0000;
+    map[x][y].isSnake(true);
+    map[x][y+1].isSnake(true);
+    map[x][y-1].isSnake(true);
     coords.push([x, y-1]);
     coords.push([x, y]);
     coords.push([x, y+1]);
@@ -73,15 +99,15 @@ var coords = [];
 var coordFood = [];    
         var x = parseInt(Math.random() * 50);
         var y = parseInt(Math.random() * 50);
-        map[x][y].fill = 0x83C3E6;
+        // map[x][y].fill = 0x83C3E6;
         map[x][y].isApple(true);
         var x = parseInt(Math.random() * 50);
         var y = parseInt(Math.random() * 50);
-        map[x][y].fill = 0x83C3E6;
+        // map[x][y].fill = 0x83C3E6;
         map[x][y].isApple(true);
         var x = parseInt(Math.random() * 50);
         var y = parseInt(Math.random() * 50);
-        map[x][y].fill = 0x83C3E6;    
+        // map[x][y].fill = 0x83C3E6;    
         map[x][y].isApple(true);
         coordFood.push([x, y]);
         coordFood.push([x, y]);
@@ -89,7 +115,6 @@ var coordFood = [];
 
         renderer.render(stage);
     
-
 
 var direction = undefined;
 
@@ -103,25 +128,28 @@ function moveDirection(info)
         var y = tmp[1];
         if (map[x - 1] !== undefined && map[x][y] !== undefined)
         {
-            map[x-1][y].fill = 0xFF0000;
-            coords.unshift([x - 1, y]);
-
+            if (map[x-1][y].isSnake())
+            {
+                alert('perdu');
+                return;
+            }
             if (map[x-1][y].isApple())
             {
                 map[x-1][y].isApple(false);
                 var x1 = parseInt(Math.random() * 50);
                 var y1 = parseInt(Math.random() * 50);
-                map[x1][y1].fill = 0x83C3E6;
                 map[x1][y1].isApple(true);
                 // coords.push([x - 1, y]);
             }
             else
             { 
                 var tmp = coords.pop();
-                var x = tmp[0];
-                var y = tmp[1];
-                map[x][y].fill = 0xFFFFFF;
+                var x1 = tmp[0];
+                var y1 = tmp[1];
+                map[x1][y1].isSnake(false);
             }
+            coords.unshift([x - 1, y]);
+            map[x-1][y].isSnake(true);
 
         }
 
@@ -217,6 +245,8 @@ function moveDirection(info)
     }
     // console.log("moveDiv >", info.keyCode);
 }
+
+
 function changeDirection(info)
 {
     direction = info.keyCode;

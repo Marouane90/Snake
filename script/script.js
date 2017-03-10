@@ -62,9 +62,6 @@ document.addEventListener("DOMContentLoaded", function()
         var y = parseInt(Math.random() * 50);
         map[x][y].fill = 0x83C3E6;    
     }
-    
-    // var food = function food();
-
 
 var coords = [];
     var x = parseInt(Math.random() * 50);

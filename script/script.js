@@ -58,6 +58,18 @@ document.addEventListener("DOMContentLoaded", function()
         }
         x++;
     }
+var coords = [];
+    var x = parseInt(Math.random() * 50);
+    var y = parseInt(Math.random() * 50);
+    map[x][y].fill = 0xFF0000;
+    map[x][y+1].fill = 0xFF0000;
+    map[x][y-1].fill = 0xFF0000;
+    coords.push([x, y-1]);
+    coords.push([x, y]);
+    coords.push([x, y+1]);
+    //Tell the `renderer` to `render` the `stage`
+    renderer.render(stage);
+
 var coordFood = [];    
         var x = parseInt(Math.random() * 50);
         var y = parseInt(Math.random() * 50);
@@ -78,53 +90,52 @@ var coordFood = [];
         renderer.render(stage);
     
 
-var coords = [];
-    var x = parseInt(Math.random() * 50);
-    var y = parseInt(Math.random() * 50);
-    map[x][y].fill = 0xFF0000;
-    map[x][y+1].fill = 0xFF0000;
-    map[x][y-1].fill = 0xFF0000;
-    coords.push([x, y-1]);
-    coords.push([x, y]);
-    coords.push([x, y+1]);
-    //Tell the `renderer` to `render` the `stage`
-    renderer.render(stage);
 
+var direction = undefined;
 
 function moveDirection(info)
 {
     // var input= document.querySelector('input');
-    if(info.keyCode == 37)
+    if(direction == 37)
     {
         var tmp = coords[0];
         var x = tmp[0];
         var y = tmp[1];
-        if (map[x -1] !== undefined && map[x][y] !== undefined)
+        if (map[x - 1] !== undefined && map[x][y] !== undefined)
         {
+            map[x-1][y].fill = 0xFF0000;
+            coords.unshift([x - 1, y]);
+
             if (map[x-1][y].isApple())
             {
                 map[x-1][y].isApple(false);
-                var x0 = parseInt(Math.random() * 50);
-                var y0 = parseInt(Math.random() * 50);
-                map[x0][y0].fill = 0x83C3E6;
-                map[x0][y0].isApple(true);
+                var x1 = parseInt(Math.random() * 50);
+                var y1 = parseInt(Math.random() * 50);
+                map[x1][y1].fill = 0x83C3E6;
+                map[x1][y1].isApple(true);
+                // coords.push([x - 1, y]);
             }
-        }
-        map[x-1][y].fill = 0xFF0000;
-        coords.unshift([x - 1, y]);
+            else
+            { 
+                var tmp = coords.pop();
+                var x = tmp[0];
+                var y = tmp[1];
+                map[x][y].fill = 0xFFFFFF;
+            }
 
-        var tmp = coords.pop();
-        var x = tmp[0];
-        var y = tmp[1];
-        map[x][y].fill = 0xFFFFFF;
+        }
+
     }
-    if(info.keyCode == 38)
+    if(direction == 38)
     {
         var tmp = coords[0];
         var x = tmp[0];
         var y = tmp[1];
         if (map[x] !== undefined && map[x][y - 1] !== undefined)
         {
+            map[x][y-1].fill = 0xFF0000;
+            coords.unshift([x, y-1]);
+
             if (map[x][y - 1].isApple())
             {
                 map[x][y - 1].isApple(false);
@@ -132,47 +143,58 @@ function moveDirection(info)
                 var y1 = parseInt(Math.random() * 50);
                 map[x1][y1].fill = 0x83C3E6;
                 map[x1][y1].isApple(true);
+                // coords.push([x, y - 1]);
             }
-            map[x][y-1].fill = 0xFF0000;
-            coords.unshift([x, y-1]);
+            else
+            {
+                var tmp = coords.pop();
+                var x = tmp[0];
+                var y = tmp[1];
+                map[x][y].fill = 0xFFFFFF; 
+            }
 
-            var tmp = coords.pop();
-            var x = tmp[0];
-            var y = tmp[1];
-            map[x][y].fill = 0xFFFFFF;
         }
     }
-    if(info.keyCode == 39)
+    if(direction == 39)
     {
         var tmp = coords[0];
         var x = tmp[0];
         var y = tmp[1];
         if (map[x +1] !== undefined && map[x][y] !== undefined)
         {
+            map[x+1][y].fill = 0xFF0000;
+            coords.unshift([x + 1, y]);
+         
+
             if (map[x+1][y].isApple())
             {
                 map[x+1][y].isApple(false);
-                var x0 = parseInt(Math.random() * 50);
-                var y0 = parseInt(Math.random() * 50);
-                map[x0][y0].fill = 0x83C3E6;
-                map[x0][y0].isApple(true);
+                var x1 = parseInt(Math.random() * 50);
+                var y1= parseInt(Math.random() * 50);
+                map[x1][y1].fill = 0x83C3E6;
+                map[x1][y1].isApple(true);
+                // coords.push([x + 1, y]);
+            }
+            else
+            {
+                var tmp = coords.pop();
+                var x = tmp[0];
+                var y = tmp[1];
+                map[x][y].fill = 0xFFFFFF;
             }
         }
-        map[x+1][y].fill = 0xFF0000;
-        coords.unshift([x + 1, y]);
 
-        var tmp = coords.pop();
-        var x = tmp[0];
-        var y = tmp[1];
-        map[x][y].fill = 0xFFFFFF;
     }
-    if(info.keyCode == 40)
+    if(direction == 40)
     {
         var tmp = coords[0];
         var x = tmp[0];
         var y = tmp[1];
         if (map[x] !== undefined && map[x][y + 1] !== undefined)
         {
+            map[x][y+1].fill = 0xFF0000;
+            coords.unshift([x, y+1]);
+
             if (map[x][y + 1].isApple())
             {
                 map[x][y + 1].isApple(false);
@@ -180,34 +202,35 @@ function moveDirection(info)
                 var y1 = parseInt(Math.random() * 50);
                 map[x1][y1].fill = 0x83C3E6;
                 map[x1][y1].isApple(true);
+                // coords.push([x, y+1]);
             }
+            else
+            {
+                var tmp = coords.pop();
+                var x = tmp[0];
+                var y = tmp[1];
+                map[x][y].fill = 0xFFFFFF;
+            }
+        
         }
-        map[x][y+1].fill = 0xFF0000;
-        coords.unshift([x, y+1]);
 
-        var tmp = coords.pop();
-        var x = tmp[0];
-        var y = tmp[1];
-        map[x][y].fill = 0xFFFFFF;
     }
     // console.log("moveDiv >", info.keyCode);
 }
-    function move() {
+function changeDirection(info)
+{
+    direction = info.keyCode;
+}
 
-        snake.speed = parseInt(Math.random() * 2);
-            this.y += this.speed;
-        if (this.y > 200)
-        {
-            this.init();
-        }
-    }
+setInterval(moveDirection, 50);
+
     function refresh()
     {
         renderer.render(stage);
         requestAnimationFrame(refresh);
     }
     requestAnimationFrame(refresh);
-    document.onkeydown = moveDirection;
+    document.onkeydown = changeDirection;
 });
 
 
